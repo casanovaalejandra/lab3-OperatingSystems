@@ -15,27 +15,32 @@ sem_t empty;
 
 void insert(int item){
   //founte:geeksForGeeks producer-consumer problem using semaphores
+//  while(currentSize>=BUFFER_SIZE);
   sem_wait(&empty);
   sem_wait(&mutex);
-  if((next_in)%BUFFER_SIZE==next_out){printf("lleno\n");}
+ // if(currentSize<BUFFER_SIZE){
   buffer[next_in]= item;
-  printf("Insert: element to insert:%d\n",item);
+  currentSize++;
+//  printf("Insert: element to insert:%d\n",item);
   next_in = (next_in+1)%BUFFER_SIZE;
-  printf("DESPUES DE INSERT:next_in = %d\n",next_in);
+ // printf("DESPUES DE INSERT:next_in = %d\n",next_in);
+//}
   sem_post(&mutex);
   sem_post(&filled);
+
 }
 
 int remove_item(){
+ // while(currentSize<=0);
   sem_wait(&filled);
   sem_wait(&mutex);
  int item;
- if(next_in==next_out){printf("vacio\n");}
+// if(currentSize>0){
  item = buffer[next_out];
-printf("Element to remove: %d",item);
+//printf("Element to remove: %d",item);
  next_out = (next_out+1)%BUFFER_SIZE;
- printf("DESPUES DE REMOVE:next_out = %d\n",next_out);
-
+ //printf("DESPUES DE REMOVE:next_out = %d\n",next_out);
+//}
  sem_post(&mutex);
  sem_post(&empty);
  return item;
