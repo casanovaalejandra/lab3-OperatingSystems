@@ -12,31 +12,38 @@ pthread_mutex_t mymutex = PTHREAD_MUTEX_INITIALIZER; //initialization of the mut
 
 void insert(int item){
   //finish implementation
-  if((next_in)%BUFFER_SIZE==next_out){printf("lleno\n");}
+  while(currentSize>=BUFFER_SIZE);
   pthread_mutex_lock(&mymutex); //when inserting to the buffer we lock
-  printf("Insert: element to insert:%d\n",item);
+
+  if(currentSize<BUFFER_SIZE){
+//  printf("Insert: element to insert:%d\n",item);
   buffer[next_in]= item;
   next_in = (next_in+1)%BUFFER_SIZE;
-  printf("DESPUES DE INSERT:next_in = %d\n",next_in);
-  pthread_mutex_unlock(&mymutex); //unlock the mutex
+  currentSize++;
+ // printf("DESPUES DE INSERT:next_in = %d\n",next_in);
+  }pthread_mutex_unlock(&mymutex); //unlock the mutex
 }
 
 int remove_item(){
  // pthread_mutex_lock(&mymutex);
-  printf("ANTES DE REMOVE:next_out = %d\n",next_out);
+ // printf("ANTES DE REMOVE:next_out = %d\n",next_out);
  int item;
- pthread_mutex_lock(&mymutex);
- if(next_in==next_out){printf("vacio\n");}
+// pthread_mutex_lock(&mymutex);
+ while(currentSize<=0);
+pthread_mutex_lock(&mymutex);
+ if(currentSize>0){
  item = buffer[next_out];
  next_out = (next_out+1)%BUFFER_SIZE;
- printf("Element to remove: %d",item);
- printf("DESPUES DE REMOVE:next_out = %d\n",next_out);
+ //printf("Element to remove: %d",item);
+ //printf("DESPUES DE REMOVE:next_out = %d\n",next_out);
+ currentSize--;
+ }
  pthread_mutex_unlock(&mymutex);
  return item;
   //finish implementation
 }
 void * producer(void * param){
-   printf("VIVO producer\n");
+//   printf("VIVO producer\n");
    int item;
    while(1){
       item = rand() % BUFFER_SIZE ;
@@ -67,7 +74,6 @@ int main(int argc, char * argv[])
     int i;
     int producers = atoi(argv[1]);
     int consumers = atoi(argv[2]);
-//    pthread_mutex_t mymutex = PTHREAD_MUTEX_INITIALIZER; //initialization of the mutex variab$
     pthread_t tids_producers[producers];//array to create the same ammount of threads as consumers and producers
     pthread_t tids_consumers[consumers];
    next_in = 0;
